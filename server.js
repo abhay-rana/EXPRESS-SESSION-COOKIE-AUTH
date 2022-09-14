@@ -19,11 +19,11 @@ app.post("/login", (req, res) => {
 	if (username != "admin" || password != "admin") {
 		return res.status(401).send("invalid credentials");
 	}
-	const sessionId = uuidv4();
+	const sessionId = uuid();
 	//generate the random session id
 	session[sessionId] = { username, userId: 1 };
 	//you will get the userId from the database where you have store the user details
-	res.set("Set-cookie", `session=${sessionId}`);
+	res.set("Set-cookie", `session=${sessionId};HttpOnly`); //HttpOnly means now no script can access your cookies data 
 	//save this as a cookie to the browser
 	res.send("successfully logged in ");
 });
@@ -53,7 +53,14 @@ app.post("/logout", (req, res) => {
 	delete session[sessionId];
 	//delete the sessionId from the server
 
-	res.set("Set-cookie", `session=;Expires=Thu 01 Jan 1970`);
+	res.set("Set-cookie", "session=;expires = Thu, 01 Jan 1970 00:00:00 GMT");
+
+	// res.clearCookie("key");  for clear the cookie
+
 	//gives the absurd date while setting the cookie so it will delete the cookie from the browser which have particular key as "session"
 	res.send("successfully logout");
+});
+
+app.listen("5000", () => {
+	console.log("server is successfully listening to the 5000 port");
 });
